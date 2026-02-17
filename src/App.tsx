@@ -4,13 +4,23 @@ import { PromptInput } from "./components/PromptInput";
 import { useChat } from "./hooks/useChat";
 
 function App() {
-  const { messages, loading, error, submitPrompt } = useChat();
+  const { messages, loading, error, submitPrompt, clearConversation } = useChat();
 
   return (
     <div className={styles.main}>
       <section className={styles.panel} aria-label="AI Assistant app">
-        <header>Cognizant AI Assistant</header>
-        <div></div>
+        <header className={styles.header}>
+          <h1 className={styles.title}>Cognizant AI Assistant</h1>
+          <button
+            type="button"
+            className={styles.clearButton}
+            disabled={messages.length === 0}
+            onClick={clearConversation}
+          >
+            Clear Chat
+          </button>
+        </header>
+
         <ChatHistory messages={messages} loading={loading} />
 
         {error ? (

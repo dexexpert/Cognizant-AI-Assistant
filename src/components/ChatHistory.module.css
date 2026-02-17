@@ -1,0 +1,50 @@
+.wrapper {
+  flex: 1;
+  overflow-y: auto;
+  background: #ffffff;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.emptyState {
+  margin: auto;
+  max-width: 50ch;
+  text-align: center;
+  color: #656773;
+  font-size: 1rem;
+  padding: 0 1rem;
+}
+
+.loadingIndicator {
+  width: fit-content;
+  margin: 1rem auto;
+  border-radius: 999px;
+  background: #ececf1;
+  color: #4c4f59;
+  font-size: 0.84rem;
+  padding: 0.32rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.spinner {
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 2px solid #cfd2dc;
+  border-top-color: #4c4f59;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.loadingText {
+  line-height: 1;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

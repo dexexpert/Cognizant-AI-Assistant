@@ -1,5 +1,5 @@
 import styles from "./PromptInput.module.css";
-import { useRef, useState, type FormEvent } from "react";
+import { useRef, useState, type SyntheticEvent, type KeyboardEvent } from "react";
 
 interface PromptInputProps {
   loading: boolean;
@@ -24,39 +24,52 @@ export const PromptInput = ({
     setPrompt("");
     textareaRef.current?.focus();
   };
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = async (event: SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
     event.preventDefault();
     await submitPrompt();
   };
+  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      void submitPrompt();
+    }
+  };
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <textarea
-        ref={textareaRef}
-        id="prompt"
-        className={styles.textarea}
-        placeholder="Ask anything ..."
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        maxLength={2000}
-        rows={1}
-        disabled={loading}
-        aria-invalid={hasError}
-      ></textarea>
-      <button
-        type="submit"
-        className={styles.submitButton}
-        disabled={loading || !trimmedPrompt}
-        aria-label={loading ? "Generating response" : "Send message"}
-      >
-        <svg
-          viewBox="0 0 24 24"
-          className={styles.sendIcon}
-          aria-hidden="true"
-          focusable="false"
+      <div className={styles.composerRow}>
+        <textarea
+          ref={textareaRef}
+          id="prompt"
+          className={styles.textarea}
+          placeholder="Ask anything ..."
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={handleKeyDown}
+          maxLength={2000}
+          rows={1}
+          disabled={loading}
+          aria-invalid={hasError}
+          aria-describedby="prompt-hint"
+        ></textarea>
+        <button
+          type="submit"
+          className={styles.submitButton}
+          disabled={loading || !trimmedPrompt}
+          aria-label={loading ? "Generating response" : "Send message"}
         >
-          <path d="M12 5l-6 6h4v8h4v-8h4z" />
-        </svg>
-      </button>
+          <svg
+            viewBox="0 0 24 24"
+            className={styles.sendIcon}
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M12 5l-6 6h4v8h4v-8h4z" />
+          </svg>
+        </button>
+      </div>
+      <p id="prompt-hint" className={styles.hint}>
+        Press Enter to send, Shift + Enter for a new line. {prompt.length}/2000
+      </p>
     </form>
   );
 };

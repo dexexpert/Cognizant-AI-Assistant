@@ -1,0 +1,72 @@
+.form {
+  width: min(760px, 100%);
+  margin: 1rem auto;
+  padding: 0.75rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.composerRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.textarea {
+  flex: 1;
+  resize: none;
+  min-height: 50px;
+  overflow-y: hidden;
+  border-radius: 0.9rem;
+  border: 1px solid #d9d9e3;
+  padding: 0.8rem 0.9rem;
+  background: #fff;
+  color: #202333;
+  font-size: 1rem;
+  line-height: 1.4;
+  box-shadow: 0 6px 18px rgba(15, 18, 28, 0.1);
+}
+
+.textarea:focus {
+  outline: 2px solid #cdcede;
+  border-color: #c7c8d3;
+}
+
+.textarea:disabled {
+  background: #f6f6f8;
+  color: #6d707b;
+}
+
+.hint {
+  color: #666a76;
+  font-size: 0.8rem;
+}
+.submitButton {
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: #4a90e2;
+  color: #fff;
+  border-radius: 1000px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #357abd;
+}
+
+.submitButton:disabled {
+  background: #a0c4f7;
+  cursor: not-allowed;
+}
+
+.sendIcon {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+}

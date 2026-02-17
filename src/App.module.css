@@ -2,3 +2,67 @@
   min-height: 100vh;
   background: #f7f7f8;
 }
+
+.panel {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  border-bottom: 1px solid #ececf1;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #353740;
+}
+
+.clearButton {
+  border: 1px solid #d9d9e3;
+  background: #fff;
+  color: #d81626;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+}
+
+.clearButton:hover:not(:disabled) {
+  background: #f3f3f5;
+}
+
+.clearButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.error {
+  width: min(760px, 100%);
+  margin: 1rem auto;
+  margin-top: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #efbdbd;
+  background: #fff5f5;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 600px) {
+  .main {
+    min-height: 100dvh;
+  }
+
+  .panel {
+    height: 100dvh;
+  }
+}

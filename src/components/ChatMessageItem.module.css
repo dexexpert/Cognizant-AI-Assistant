@@ -1,0 +1,56 @@
+.row {
+  width: 100%;
+  padding: 1rem 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.inner {
+    width: min(760px, 100%);
+    display: flex;
+}
+
+.assistantRow {
+  background: #ffffff;
+}
+
+.userRow {
+  background: #ffffff;
+}
+
+.assistantRow .inner {
+  justify-content: flex-start;
+}
+
+.userRow .inner {
+  justify-content: flex-end;
+}
+
+.bubble {
+  max-width: min(760px, 100%);
+  border-radius: 0.8rem;
+  padding: 0.8rem 1rem;
+  line-height: 1.5;
+}
+
+.user {
+  width: fit-content;
+  max-width: 78%;
+  background: #eef2ff;
+  border: 1px solid #bde4ff;
+  color: #202533;
+}
+
+.assistant {
+  width: min(760px, 100%);
+  background: #ffffff;
+  border: 1px solid #ececf1;
+  color: #1f2330;
+}
+
+.content {
+  margin: 0;
+  font-size: 1rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
