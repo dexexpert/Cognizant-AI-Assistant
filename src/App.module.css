@@ -57,6 +57,76 @@
   font-size: 0.8rem;
 }
 
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(19, 19, 19, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.modal {
+  width: min(460px, 100%);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 44px rgba(10, 10, 10, 0.2);
+  padding: 1.1rem;
+}
+
+.modalTitle {
+  margin: 0;
+  color: black;
+  font-size: 1.1rem;
+}
+
+.modalDescription {
+  margin: 0.6rem 0 0;
+  color: #555555;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.modalActions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.modalCancelButton,
+.modalClearButton {
+  border-radius: 0.5rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+}
+
+.modalCancelButton {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: black;
+}
+
+.modalCancelButton:hover {
+  background: #f0f0f0;
+}
+
+.modalClearButton {
+  border: 1px solid #dc2626;
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.modalClearButton:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
 @media (max-width: 600px) {
   .main {
     min-height: 100dvh;

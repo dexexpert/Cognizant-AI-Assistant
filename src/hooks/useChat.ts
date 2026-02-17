@@ -118,7 +118,6 @@ export const useChat = () => {
       dispatch({ type: "submit_start", payload: userMessage });
 
       try {
-        //TO-DO - Call the actual AI service here and await the response
         const controller = new AbortController();
         abortControllerRef.current = controller;
         const aiResponse = await fetchAIResponse(conversation, {
@@ -129,11 +128,22 @@ export const useChat = () => {
           payload: createMessage("assistant", aiResponse),
         });
       } catch (err) {
-        // TO-DO - Handle errors with actual AI service call
         console.error("Error fetching AI response:", err);
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          return
+        }
+
+        if(err instanceof DOMException && err.name === 'TimeoutError') {
+          dispatch({
+            type: "submit_error",
+            payload: err.message || "The request timed out. Please try again.",
+          });
+          return;
+        }
+        const message = err instanceof Error ? err.message : "An unknown error occurred.";
         dispatch({
           type: "submit_error",
-          payload: "Failed to get response from AI assistant.",
+          payload: message,
         });
       } finally {
         abortControllerRef.current = null;
