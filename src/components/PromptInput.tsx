@@ -1,5 +1,5 @@
 import styles from "./PromptInput.module.css";
-import { useRef, useState, type SyntheticEvent, type KeyboardEvent } from "react";
+import { useRef, useState, type SyntheticEvent, type KeyboardEvent, useEffect } from "react";
 
 interface PromptInputProps {
   loading: boolean;
@@ -15,6 +15,23 @@ export const PromptInput = ({
   const [prompt, setPrompt] = useState("");
   const trimmedPrompt = prompt.trim();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if(!textarea) return;
+    textarea.style.height = "auto";
+
+    const computed = window.getComputedStyle(textarea);
+    const lineHeight = Number.parseFloat(computed.lineHeight) || 22;
+    const paddingHeight = Number.parseFloat(computed.paddingTop) + Number.parseFloat(computed.paddingBottom);
+    const borderHeight = Number.parseFloat(computed.borderTopWidth) + Number.parseFloat(computed.borderBottomWidth);
+    const maxHeight = lineHeight * 10 + paddingHeight + borderHeight;
+
+    const nextHeight = Math.min(textarea.scrollHeight, maxHeight);
+    textarea.style.height = `${nextHeight}px`;
+    textarea.style.overflowY = textarea.scrollHeight > maxHeight ? "auto" : "hidden";
+  }, [prompt]);
+
   const submitPrompt = async () => {
     const trimmed = prompt.trim();
     if (!trimmed || loading) {
