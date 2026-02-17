@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer } from "react";
+import { useCallback, useEffect, useReducer, useRef } from "react";
 import type { ChatMessage } from "../types/chat";
 import { fetchAIResponse } from "../services/aiService";
 
@@ -14,7 +14,8 @@ interface ChatState {
 type ChatAction =
   | { type: "submit_start"; payload: ChatMessage }
   | { type: "submit_success"; payload: ChatMessage }
-  | { type: "submit_error"; payload: string };
+  | { type: "submit_error"; payload: string }
+  | { type: "clear" };
 
 const createMessage = (
   role: ChatMessage["sender"],
@@ -78,10 +79,19 @@ const reducer = (state: ChatState, action: ChatAction): ChatState => {
         loading: false,
         error: action.payload,
       };
+    case "clear":
+      return {
+        messages: [],
+        loading: false,
+        error: null,
+      };
+    default:
+      return state;
   }
 };
 
 export const useChat = () => {
+  const abortControllerRef = useRef<AbortController | null>(null);
   const [state, dispatch] = useReducer(reducer, {
     messages: getInitialMessages(),
     loading: false,
@@ -93,6 +103,12 @@ export const useChat = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(recentMessages));
   }, [state.messages]);
 
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
+
   const submitPrompt = useCallback(
     async (prompt: string) => {
       const trimmedPrompt = prompt.trim();
@@ -103,7 +119,11 @@ export const useChat = () => {
 
       try {
         //TO-DO - Call the actual AI service here and await the response
-        const aiResponse = await fetchAIResponse(conversation);
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+        const aiResponse = await fetchAIResponse(conversation, {
+          signal: controller.signal,
+        });
         dispatch({
           type: "submit_success",
           payload: createMessage("assistant", aiResponse),
@@ -115,15 +135,25 @@ export const useChat = () => {
           type: "submit_error",
           payload: "Failed to get response from AI assistant.",
         });
+      } finally {
+        abortControllerRef.current = null;
       }
     },
     [state.loading, state.messages],
   );
+
+  const clearConversation = useCallback(() => {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    localStorage.removeItem(STORAGE_KEY);
+    dispatch({ type: "clear" });
+  }, []);
 
   return {
     messages: state.messages,
     loading: state.loading,
     error: state.error,
     submitPrompt,
+    clearConversation,
   };
 };
