@@ -67,7 +67,7 @@ export const fetchAIResponse = async (
       model,
       messages: getRequestMessages(messages),
     }),
-    signal: options?.signal,
+    signal: timedSignal.signal,
   }).finally(() => {
     timedSignal.cleanup();
   });
