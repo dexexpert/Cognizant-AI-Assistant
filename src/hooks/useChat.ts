@@ -1,0 +1,129 @@
+import { useCallback, useEffect, useReducer } from "react";
+import type { ChatMessage } from "../types/chat";
+import { fetchAIResponse } from "../services/aiService";
+
+const STORAGE_KEY = "cognizant_chat_history";
+const MAX_StORED_MESSAGES = 50;
+
+interface ChatState {
+  messages: ChatMessage[];
+  loading: boolean;
+  error: string | null;
+}
+
+type ChatAction =
+  | { type: "submit_start"; payload: ChatMessage }
+  | { type: "submit_success"; payload: ChatMessage }
+  | { type: "submit_error"; payload: string };
+
+const createMessage = (
+  role: ChatMessage["sender"],
+  content: string,
+): ChatMessage => {
+  return {
+    id:
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random()}`,
+    sender: role,
+    content,
+    timestamp: new Date().toISOString(),
+  };
+};
+
+const isChatMessage = (value: unknown): value is ChatMessage => {
+  if (!value || typeof value !== "object") return false;
+  const v = value as Record<string, unknown>;
+
+  return (
+    typeof v.id === "string" &&
+    typeof v.sender === "string" &&
+    typeof v.content === "string" &&
+    typeof v.timestamp === "string"
+  );
+};
+
+const getInitialMessages = (): ChatMessage[] => {
+  try {
+    const serializedMessages = localStorage.getItem(STORAGE_KEY);
+    if (!serializedMessages) return [];
+    const messages = JSON.parse(serializedMessages) as ChatMessage[];
+    if (!Array.isArray(messages)) return [];
+    return messages.filter(isChatMessage).slice(-MAX_StORED_MESSAGES);
+  } catch (err) {
+    console.error("Failed to load chat history from localStorage:", err);
+    return [];
+  }
+};
+
+const reducer = (state: ChatState, action: ChatAction): ChatState => {
+  switch (action.type) {
+    case "submit_start":
+      return {
+        ...state,
+        loading: true,
+        error: null,
+        messages: [...state.messages, action.payload],
+      };
+    case "submit_success":
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        messages: [...state.messages, action.payload],
+      };
+    case "submit_error":
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+  }
+};
+
+export const useChat = () => {
+  const [state, dispatch] = useReducer(reducer, {
+    messages: getInitialMessages(),
+    loading: false,
+    error: null,
+  });
+
+  useEffect(() => {
+    const recentMessages = state.messages.slice(-MAX_StORED_MESSAGES);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(recentMessages));
+  }, [state.messages]);
+
+  const submitPrompt = useCallback(
+    async (prompt: string) => {
+      const trimmedPrompt = prompt.trim();
+      if (!trimmedPrompt || state.loading) return;
+      const userMessage = createMessage("user", trimmedPrompt);
+      const conversation = [...state.messages, userMessage];
+      dispatch({ type: "submit_start", payload: userMessage });
+
+      try {
+        //TO-DO - Call the actual AI service here and await the response
+        const aiResponse = await fetchAIResponse(conversation);
+        dispatch({
+          type: "submit_success",
+          payload: createMessage("assistant", aiResponse),
+        });
+      } catch (err) {
+        // TO-DO - Handle errors with actual AI service call
+        console.error("Error fetching AI response:", err);
+        dispatch({
+          type: "submit_error",
+          payload: "Failed to get response from AI assistant.",
+        });
+      }
+    },
+    [state.loading, state.messages],
+  );
+
+  return {
+    messages: state.messages,
+    loading: state.loading,
+    error: state.error,
+    submitPrompt,
+  };
+};
